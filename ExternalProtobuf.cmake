@@ -31,7 +31,7 @@ else()
     SHA256=82b124816eb8e9e99e8312b6c751c68ec690e2b1eaef7fa2c20743152367ec80)
   set(PROTOBUF_ROOT_DIR ${CMAKE_CURRENT_BINARY_DIR}/protobuf)
 
-  if(UNIX AND NOT COMPILE_64BIT)
+  if(UNIX AND COMPILE_32BIT)
     set(_pb_flags -DCMAKE_C_FLAGS=-m32
                   -DCMAKE_CXX_FLAGS=-m32)
   endif()
