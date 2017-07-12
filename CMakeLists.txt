@@ -23,11 +23,11 @@ include(ExternalOpenSSL)
 include(ExternalPostgreSQL)
 include(ExternalProtobuf)
 
-message("${CMAKE_SHARED_LIBRARY_SUFFIX}")
-
 # BinExport release number. Increase every time any backwards incompatible
 # change is made (usually when a new BinDiff or BinNavi version is released.
 set(RELEASE 10)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Use a copy of a subset of Boost that we ship
 set(Boost_NO_SYSTEM_PATHS ON)

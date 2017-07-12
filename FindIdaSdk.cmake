@@ -142,9 +142,9 @@ function(_ida_plugin name ea64 link_script)  # ARGN contains sources
   set_target_properties(${name} PROPERTIES PREFIX "" SUFFIX "")
   if(UNIX)
     if(NOT IdaSdk_COMPILE_32BIT)
-      set(_ida_cflag -m32)
-    else()
       set(_ida_cflag -m64)
+    else()
+      set(_ida_cflag -m32)
     endif()
     # Always use the linker script needed for IDA.
     target_compile_options(${name} PUBLIC ${_ida_cflag})

@@ -21,3 +21,4 @@ third_party/zynamics/binexport
 *.pb.cc
 *.pb.h
 version.h
+compile_commands.json
