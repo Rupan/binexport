@@ -27,8 +27,6 @@ include(ExternalProtobuf)
 # change is made (usually when a new BinDiff or BinNavi version is released.
 set(RELEASE 10)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 # Use a copy of a subset of Boost that we ship
 set(Boost_NO_SYSTEM_PATHS ON)
 set(BOOST_ROOT ${PROJECT_SOURCE_DIR}/third_party/boost_parts)

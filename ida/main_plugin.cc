@@ -109,9 +109,9 @@ void ExportDatabase(ChainWriter& writer) {
   {
     EntryPointAdder entry_point_adder(&entry_points, "function chunks");
     for (size_t i = 0; i < get_fchunk_qty(); ++i) {
-      if (const func_t* idaFunc = getn_fchunk(i)) {
-        entry_point_adder.Add(idaFunc->start_ea,
-                              (idaFunc->flags & FUNC_TAIL)
+      if (const func_t* ida_func = getn_fchunk(i)) {
+        entry_point_adder.Add(ida_func->start_ea,
+                              (ida_func->flags & FUNC_TAIL)
                                   ? EntryPoint::Source::FUNCTION_CHUNK
                                   : EntryPoint::Source::FUNCTION_PROLOGUE);
       }
@@ -190,7 +190,7 @@ int ExportBinary(const std::string& filename) {
   return eOk;
 }
 
-void idaapi ButtonBinaryExport(TView** /* fields */, int) {
+void idaapi ButtonBinaryExport(TWidget** /* fields */, int) {
   const auto name(GetDefaultName(ExportMode::kBinary));
   const char* filename = askfile2_c(
       /* forsave = */ true, name.c_str(),
@@ -202,8 +202,8 @@ void idaapi ButtonBinaryExport(TView** /* fields */, int) {
   }
 
   if (FileExists(filename) &&
-        askyn_c(0, "'%s' already exists - overwrite?", filename) != 1) {
-      return;
+      askyn_c(0, "'%s' already exists - overwrite?", filename) != 1) {
+    return;
   }
 
   ExportBinary(filename);
@@ -227,7 +227,7 @@ int ExportText(const std::string& filename) {
   return eOk;
 }
 
-void idaapi ButtonTextExport(TView** /* fields */, int) {
+void idaapi ButtonTextExport(TWidget** /* fields */, int) {
   const auto name(GetDefaultName(ExportMode::kText));
   const char* filename = askfile2_c(
       /* forsave = */ true, name.c_str(),
@@ -263,7 +263,7 @@ int ExportStatistics(const std::string& filename) {
   return eOk;
 }
 
-void idaapi ButtonStatisticsExport(TView** /* fields */, int) {
+void idaapi ButtonStatisticsExport(TWidget** /* fields */, int) {
   const auto name(GetDefaultName(ExportMode::kStatistics));
   const char* filename = askfile2_c(
       /* forsave = */ true, name.c_str(),
@@ -327,32 +327,37 @@ int DoExport(ExportMode mode, std::string name,
   }
 }
 
-static const char kBinExport2DiffIdcArgs[] = {VT_STR, 0};
-static const ext_idcfunc_t myfunc_desc = { "MyFunc5", myfunc5, myfunc5_args, NULL, 0, EXTFUN_BASE };
 error_t idaapi IdcBinExport2Diff(idc_value_t* argument, idc_value_t*) {
   return DoExport(ExportMode::kBinary, std::string(argument[0].c_str()),
-                  /* connection_string */ "");
+                  /* connection_string = */ "");
 }
+static const char kBinExport2DiffIdcArgs[] = {VT_STR, 0};
+static const ext_idcfunc_t kBinExport2DiffIdcFunc = {
+    "BinExport2Diff", IdcBinExport2Diff, kBinExport2DiffIdcArgs, nullptr, 0,
+    EXTFUN_BASE};
 
-static const char kBinExport2TextIdcArgs[] = {VT_STR, 0};
 error_t idaapi IdcBinExport2Text(idc_value_t* argument, idc_value_t*) {
   return DoExport(ExportMode::kText, std::string(argument[0].c_str()),
-                  /* connection_string */ "");
+                  /* connection_string = */ "");
 }
+static const char kBinExport2TextIdcArgs[] = {VT_STR, 0};
+static const ext_idcfunc_t kBinExport2TextIdcFunc = {
+    "BinExport2Text", IdcBinExport2Text, kBinExport2TextIdcArgs, nullptr, 0,
+    EXTFUN_BASE};
 
-static const char kBinExport2StatisticsIdcArgs[] = {VT_STR, 0};
 error_t idaapi IdcBinExport2Statistics(idc_value_t* argument, idc_value_t*) {
   return DoExport(ExportMode::kStatistics, std::string(argument[0].c_str()),
-                  /* connection_string */ "");
+                  /* connection_string = */ "");
 }
+static const char kBinExport2StatisticsIdcArgs[] = {VT_STR, 0};
+static const ext_idcfunc_t kBinExport2StatisticsIdcFunc = {
+    "BinExport2Statistics",
+    IdcBinExport2Statistics,
+    kBinExport2StatisticsIdcArgs,
+    nullptr,
+    0,
+    EXTFUN_BASE};
 
-static const char kBinExport2SqlIdcArgs[] = {VT_STR /* Host */,
-                                             VT_LONG /* Port */,
-                                             VT_STR /* Database */,
-                                             VT_STR /* Schema */,
-                                             VT_STR /* User */,
-                                             VT_STR /* Password */,
-                                             0};
 error_t idaapi IdcBinExport2Sql(idc_value_t* argument, idc_value_t*) {
   if (argument[0].vtype != VT_STR || argument[1].vtype != VT_LONG ||
       argument[2].vtype != VT_STR || argument[3].vtype != VT_STR ||
@@ -375,6 +380,16 @@ error_t idaapi IdcBinExport2Sql(idc_value_t* argument, idc_value_t*) {
   }
   return eOk;
 }
+static const char kBinExport2SqlIdcArgs[] = {VT_STR /* Host */,
+                                             VT_LONG /* Port */,
+                                             VT_STR /* Database */,
+                                             VT_STR /* Schema */,
+                                             VT_STR /* User */,
+                                             VT_STR /* Password */,
+                                             0};
+static const ext_idcfunc_t kBinExport2SqlIdcFunc = {
+    "BinExport2Sql", IdcBinExport2Sql, kBinExport2SqlIdcArgs, nullptr, 0,
+    EXTFUN_BASE};
 
 int idaapi PluginInit() {
   LoggingOptions options;
@@ -402,14 +417,10 @@ int idaapi PluginInit() {
   addon_info.freeform = kCopyright;
   register_addon(&addon_info);
 
-  if (!add_idc_func(kBinExportDiff, IdcBinExport2Diff,
-                       kBinExport2DiffIdcArgs, EXTFUN_BASE) ||
-      !add_idc_func(kBinExportSql, IdcBinExport2Sql, kBinExport2SqlIdcArgs,
-                       EXTFUN_BASE) ||
-      !add_idc_func(kBinExportText, IdcBinExport2Text,
-                       kBinExport2TextIdcArgs, EXTFUN_BASE) ||
-      !add_idc_func(kBinExportStatistics, IdcBinExport2Statistics,
-                       kBinExport2StatisticsIdcArgs, EXTFUN_BASE)) {
+  if (!add_idc_func(kBinExport2DiffIdcFunc) ||
+      !add_idc_func(kBinExport2TextIdcFunc) ||
+      !add_idc_func(kBinExport2StatisticsIdcFunc) ||
+      !add_idc_func(kBinExport2SqlIdcFunc)) {
     LOG(INFO) << "Error registering IDC extension, skipping BinExport plugin";
     return PLUGIN_SKIP;
   }
@@ -421,10 +432,10 @@ void idaapi PluginTerminate() {
   ShutdownLogging();
 }
 
-void idaapi PluginRun(int argument) {
-  if (strlen(database_idb) == 0) {
+bool idaapi PluginRun(size_t argument) {
+  if (strlen(get_path(PATH_TYPE_IDB)) == 0) {
     info("Please open an IDB first.");
-    return;
+    return false;
   }
 
   try {
@@ -456,6 +467,7 @@ void idaapi PluginRun(int argument) {
     LOG(INFO) << "export cancelled: " << error.what();
     warning("export cancelled: %s\n", error.what());
   }
+  return true;
 }
 
 #ifdef OPENSSL_IS_BORINGSSL
