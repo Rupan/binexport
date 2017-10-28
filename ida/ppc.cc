@@ -392,10 +392,10 @@ Operands DecodeOperandsPpc(const insn_t& instruction) {
   Operands operands;
   for (uint8_t operand_position = 0;
        operand_position < UA_MAXOP &&
-       instruction.Operands[operand_position].type != o_void;
+       instruction.ops[operand_position].type != o_void;
        ++operand_position) {
     Expressions expressions;
-    const op_t& operand = instruction.Operands[operand_position];
+    const op_t& operand = instruction.ops[operand_position];
 
     Expression* expression = 0;
     switch (operand.type) {

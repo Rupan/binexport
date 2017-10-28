@@ -334,8 +334,8 @@ std::string GetVariableName(const insn_t& instruction, uint8_t operand_num) {
   }
 
   const member_t* stack_variable =
-      get_stkvar(instruction, instruction.Operands[operand_num],
-                 instruction.Operands[operand_num].addr, 0);
+      get_stkvar(0, instruction, instruction.ops[operand_num],
+                 instruction.ops[operand_num].addr);
   if (!stack_variable) {
     return "";
   }
@@ -367,8 +367,8 @@ std::string GetVariableName(const insn_t& instruction, uint8_t operand_num) {
     tid_t id = 0;
     adiff_t disp = 0;
     adiff_t delta = 0;
-    if (get_struct_operand(instruction.ea, operand_num, &id, &disp, &delta) &&
-        instruction.Operands[operand_num].reg == 4) {
+    if (get_struct_operand(&disp, &delta, &id, instruction.ea, operand_num) &&
+        instruction.ops[operand_num].reg == 4) {
       int delta = get_spd(function, instruction.ea);
       delta = -delta - function->frregs;
       if (delta) {
@@ -408,7 +408,7 @@ std::string GetGlobalStructureName(Address address, Address instance_address,
   adiff_t disp = 0;
   adiff_t delta = 0;
 
-  int num_structs = get_struct_operand(address, operand_num, id, &disp, &delta);
+  int num_structs = get_struct_operand(&disp, &delta, id, address, operand_num);
   if (num_structs > 0) {
     // Special case for the first index - this may be an instance name instead
     // of a type name.
@@ -642,8 +642,7 @@ void AnalyzeFlow(const insn_t& ida_instruction, Instruction* instruction,
 
 std::string GetBytes(const Instruction& instruction) {
   std::string bytes(instruction.GetSize(), '\0');
-  get_bytes(static_cast<ea_t>(instruction.GetAddress()), &(bytes[0]),
-            instruction.GetSize());
+  get_bytes(&(bytes[0]), instruction.GetSize(), static_cast<ea_t>(instruction.GetAddress()));
   return bytes;
 }
 
@@ -657,12 +656,12 @@ std::vector<Byte> GetSectionBytes(ea_t segment_start_address) {
   const segment_t* ida_segment = getseg(segment_start_address);
   if (ida_segment && is_loaded(ida_segment->start_ea)) {
     const ea_t undefined_bytes =
-        nextthat(ida_segment->start_ea, ida_segment->end_ea, HasNoValue,
+        next_that(ida_segment->start_ea, ida_segment->end_ea, HasNoValue,
                  nullptr /* user data */);
     bytes.resize(
         (undefined_bytes == BADADDR ? ida_segment->end_ea : undefined_bytes) -
         ida_segment->start_ea);
-    get_bytes(ida_segment->start_ea, &bytes[0], bytes.size());
+    get_bytes(&bytes[0], bytes.size(), ida_segment->start_ea);
   }
   return bytes;
 }
@@ -870,7 +869,7 @@ void GetEnumComments(Address address,
                                             // function in IDA as well!
   unsigned char serial;
   if (is_enum0(get_flags(address))) {
-    if (int id = get_enum_id(address, 0, &serial) != BADNODE) {
+    if (int id = get_enum_id(&serial, address, 0) != BADNODE) {
       qstring ida_name(get_enum_name(id));
       comments->emplace_back(address, 0,
                              CallGraph::CacheString(std::string(
@@ -879,7 +878,7 @@ void GetEnumComments(Address address,
     }
   }
   if (is_enum1(get_flags(address))) {
-    if (int id = get_enum_id(address, 1, &serial) != BADNODE) {
+    if (int id = get_enum_id(&serial, address, 1) != BADNODE) {
       qstring ida_name(get_enum_name(id));
       comments->emplace_back(address, 1,
                              CallGraph::CacheString(std::string(

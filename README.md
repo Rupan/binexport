@@ -162,7 +162,7 @@ based format, there are quite a few dependencies to satisfy:
 *   GCC 4.8 or a recent version of Clang on Linux/macOS. On Windows, use the
     Visual Studio 2017 compiler and the Windows SDK for Windows 10.
 *   Git 1.8 or higher
-*   IDA SDK 7.0 Beta (unpack into `third_party/idasdk`)
+*   IDA SDK 7.0 (unpack into `third_party/idasdk`)
 *   OpenSSL 1.0.1 or higher
 *   Perl 5.6 or higher (needed for OpenSSL and PostgreSQL)
 *   PostgreSQL client libraries 9.3 or higher
@@ -189,11 +189,11 @@ of the cloned repository.
 #### IDA SDK
 
 Unzip the contents of the IDA SDK into `third_party/idasdk`. Shown commands are
-for IDA 7.0 Beta:
+for IDA 7.0:
 
-    unzip PATH/TO/idasdk700x64.zip -d third_party/idasdk
-    mv third_party/idasdk/idasdk700x64/* third_party/idasdk
-    rmdir third_party/idasdk/idasdk700x64
+    unzip PATH/TO/idasdk70.zip -d third_party/idasdk
+    mv third_party/idasdk/idasdk70/* third_party/idasdk
+    rmdir third_party/idasdk/idasdk70
 
 #### Build BinExport
 
@@ -258,11 +258,11 @@ The last command makes CMake available in the system path.
 #### IDA SDK
 
 Unzip the contents of the IDA SDK into `third_party/idasdk`. Shown commands are
-for IDA 7.0 Beta:
+for IDA 7.0:
 
-    unzip PATH/TO/idasdk700x64.zip -d third_party/idasdk
-    mv third_party/idasdk/idasdk700x64/* third_party/idasdk
-    rmdir third_party/idasdk/idasdk700x64
+    unzip PATH/TO/idasdk70.zip -d third_party/idasdk
+    mv third_party/idasdk/idasdk70/* third_party/idasdk
+    rmdir third_party/idasdk/idasdk70
 
 #### Build BinExport
 
@@ -321,11 +321,10 @@ for Visual Studio 2015):
 #### IDA SDK
 
 Unzip the contents of the IDA SDK into `third_party/idasdk`. Shown commands are
-for IDA 7.0 Beta, assuming that Git was installed into the default directory
-first:
+for IDA 7.0, assuming that Git was installed into the default directory first:
 
-    "%ProgramFiles%\Git\usr\bin\unzip" PATH\TO\idasdk700x64.zip -d third_party
-    rename third_party\idasdk700x64 idasdk
+    "%ProgramFiles%\Git\usr\bin\unzip" PATH\TO\idasdk70.zip -d third_party
+    rename third_party\idasdk70 idasdk
 
 #### Build BinExport
 

@@ -309,8 +309,7 @@ const struc_t* GetIdaStruct(Address address, size_t operand_num,
                             adiff_t* offset) {
   tid_t path[MAXSTRUCPATH];
   adiff_t delta;
-  if (get_struct_operand(static_cast<ea_t>(address), operand_num, path, offset,
-                         &delta)) {
+  if (get_struct_operand(offset, &delta, path, static_cast<ea_t>(address), operand_num)) {
     // For now we only need to consider the root base type together with an
     // offset in order to uniquely address members in nested structures, so
     // we merely return the first element of that path. This will change once
@@ -389,7 +388,7 @@ const BaseType* IdaTypesContainer::GetBuiltinType(size_t type_size) const {
 const BaseType* IdaTypesContainer::CreateOrGetBaseTypes(
     const member_t* member, BaseType::MemberTypes* member_types) {
   tinfo_t tif;
-  if (!get_member_tinfo(member, &tif) && !guess_tinfo(member->id, &tif)) {
+  if (!get_member_tinfo(&tif, member) && !guess_tinfo(&tif, member->id)) {
     return nullptr;
   }
   if (tif.is_array()) {
@@ -691,7 +690,7 @@ void IdaTypesContainer::CreateFunctionPrototype(const Function& function) {
   const Address address = function.GetEntryPoint();
 
   tinfo_t tif;
-  if (!get_tinfo(address, &tif) && !guess_tinfo(address, &tif)) {
+  if (!get_tinfo(&tif, address) && !guess_tinfo(&tif, address)) {
     return;
   }
 

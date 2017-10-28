@@ -192,7 +192,7 @@ int ExportBinary(const std::string& filename) {
 
 void idaapi ButtonBinaryExport(TWidget** /* fields */, int) {
   const auto name(GetDefaultName(ExportMode::kBinary));
-  const char* filename = askfile2_c(
+  const char* filename = ask_file(
       /* forsave = */ true, name.c_str(),
       StrCat("BinExport v2 files|*.BinExport|All files|", kAllFilesFilter)
           .c_str(),
@@ -202,7 +202,7 @@ void idaapi ButtonBinaryExport(TWidget** /* fields */, int) {
   }
 
   if (FileExists(filename) &&
-      askyn_c(0, "'%s' already exists - overwrite?", filename) != 1) {
+      ask_yn(0, "'%s' already exists - overwrite?", filename) != 1) {
     return;
   }
 
@@ -229,7 +229,7 @@ int ExportText(const std::string& filename) {
 
 void idaapi ButtonTextExport(TWidget** /* fields */, int) {
   const auto name(GetDefaultName(ExportMode::kText));
-  const char* filename = askfile2_c(
+  const char* filename = ask_file(
       /* forsave = */ true, name.c_str(),
       StrCat("Text files|*.txt|All files|", kAllFilesFilter).c_str(),
       "Export to Text");
@@ -238,7 +238,7 @@ void idaapi ButtonTextExport(TWidget** /* fields */, int) {
   }
 
   if (FileExists(filename) &&
-        askyn_c(0, "'%s' already exists - overwrite?", filename) != 1) {
+        ask_yn(0, "'%s' already exists - overwrite?", filename) != 1) {
     return;
   }
 
@@ -265,7 +265,7 @@ int ExportStatistics(const std::string& filename) {
 
 void idaapi ButtonStatisticsExport(TWidget** /* fields */, int) {
   const auto name(GetDefaultName(ExportMode::kStatistics));
-  const char* filename = askfile2_c(
+  const char* filename = ask_file(
       /* forsave = */ true, name.c_str(),
       StrCat("BinExport Statistics|*.statistics|All files|", kAllFilesFilter)
           .c_str(),
@@ -275,7 +275,7 @@ void idaapi ButtonStatisticsExport(TWidget** /* fields */, int) {
   }
 
   if (FileExists(filename) &&
-        askyn_c(0, "'%s' already exists - overwrite?", filename) != 1) {
+        ask_yn(0, "'%s' already exists - overwrite?", filename) != 1) {
     return;
   }
 
@@ -460,7 +460,7 @@ bool idaapi PluginRun(size_t argument) {
 
       DoExport(static_cast<ExportMode>(argument), module, connection_string);
     } else {
-      AskUsingForm_c(GetDialog(), ButtonBinaryExport, ButtonTextExport,
+      ask_form(GetDialog(), ButtonBinaryExport, ButtonTextExport,
                      ButtonStatisticsExport);
     }
   } catch (const std::exception& error) {

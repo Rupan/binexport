@@ -33,7 +33,7 @@
 #
 #   IdaSdk_ROOT_DIR  - Preferred installation prefix
 #
-# The latest IDA SDK (7.0 Beta) can be used to build both 64-bit (new default)
+# The latest IDA SDK (7.0) can be used to build both 64-bit (new default)
 # and 32-bit plugin binaries. Users may tell this module how to configure the
 # build using these variables:
 #

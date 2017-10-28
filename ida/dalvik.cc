@@ -135,7 +135,7 @@ dex_header_item& GetDexHeader() {
   static bool header_init_done(false);
   if (!header_init_done) {
     memset(&header, 0, sizeof(dex_header_item));
-    get_bytes(0, &header, sizeof(dex_header_item));
+    get_bytes(&header, sizeof(dex_header_item), header.link_off);
     header_init_done = true;
   }
   return header;
@@ -143,9 +143,9 @@ dex_header_item& GetDexHeader() {
 
 std::string GetTypeNameByIndex(size_t index) {
   dex_header_item& header(GetDexHeader());
-  uint32_t type_idx(get_long(header.type_ids_off + index * sizeof(uint32_t)));
+  uint32_t type_idx(get_dword(header.type_ids_off + index * sizeof(uint32_t)));
   uint32_t str_off(
-      get_long(header.string_ids_off + type_idx * sizeof(uint32_t)));
+      get_dword(header.string_ids_off + type_idx * sizeof(uint32_t)));
   return GetDexString(str_off);
 }
 
@@ -153,10 +153,10 @@ Operands ParseOperandsIdaDalvik(const insn_t& instruction,
                                 CallGraph* /* call_graph */,
                                 FlowGraph* flow_graph) {
   Operands operands;
-  for (uint8_t i = 0; i < UA_MAXOP && instruction.Operands[i].type != o_void;
+  for (uint8_t i = 0; i < UA_MAXOP && instruction.ops[i].type != o_void;
        ++i) {
     Expressions expressions;
-    const op_t& operand(instruction.Operands[i]);
+    const op_t& operand(instruction.ops[i]);
 
     Expression* expr = nullptr;
     switch (operand.type) {

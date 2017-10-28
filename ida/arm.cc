@@ -137,10 +137,10 @@ Operands DecodeOperandsArm(const insn_t& instruction) {
   Operands operands;
   for (uint8_t operand_position = 0;
        operand_position < UA_MAXOP &&
-       instruction.Operands[operand_position].type != o_void;
+       instruction.ops[operand_position].type != o_void;
        ++operand_position) {
     Expressions expressions;
-    const op_t& operand = instruction.Operands[operand_position];
+    const op_t& operand = instruction.ops[operand_position];
 
     Expression* expression = nullptr;
     switch (operand.type) {
@@ -725,7 +725,7 @@ Instruction ParseInstructionIdaArm(const insn_t& instruction,
                                         "DA", "DB", "IA", "IB"};
     static const char* const stack[] = {"ED", "FD", "EA", "FA",
                                         "FA", "EA", "FD", "ED"};
-    const op_t& operand = instruction.Operands[0];
+    const op_t& operand = instruction.ops[0];
     if (GetRegisterName(operand.reg, GetOperandByteSize(instruction, operand)) ==
             std::string("SP") &&
         instruction.itype != ARM_srs) {

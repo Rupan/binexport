@@ -109,11 +109,11 @@ Operands DecodeOperandsMips(const insn_t& instruction) {
   Operands operands;
   for (uint8_t operand_position = 0;
        operand_position < UA_MAXOP &&
-       instruction.Operands[operand_position].type != o_void;
+       instruction.ops[operand_position].type != o_void;
        ++operand_position) {
     Expressions expressions;
     // const insn_t & instruction = cmd;
-    const op_t& operand = instruction.Operands[operand_position];
+    const op_t& operand = instruction.ops[operand_position];
 
     Expression* expression = 0;
     switch (operand.type) {
@@ -313,7 +313,7 @@ Instruction ParseInstructionIdaMips(const insn_t& instruction,
     }
   } else if (instruction.itype == MIPS_pmfhl) {
     static const char* const pmfhl_p[] = {".lw", ".uw", ".slw", ".lh", ".sh"};
-    int fmt = (get_long(instruction.ea) >> 6) & 0x1F;
+    int fmt = (get_dword(instruction.ea) >> 6) & 0x1F;
     mnemonic += pmfhl_p[fmt];
   }
 
